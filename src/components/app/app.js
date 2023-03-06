@@ -64,7 +64,6 @@ export default class App extends React.Component {
   };
 
   updateTask = (id, text) => {
-    console.log(id, text);
     const { todos } = this.state;
     const index = todos.findIndex((elem) => elem.id === id);
     const oldItem = todos[index];
