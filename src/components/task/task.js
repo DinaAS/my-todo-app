@@ -5,10 +5,6 @@ import ruLocale from 'date-fns/locale/ru';
 import './task.css';
 
 export default class Task extends Component {
-  state = {
-    task: '',
-  };
-
   dateCreate = new Date();
 
   date = formatDistanceToNow(this.dateCreate, 'ddd/MMM/D/YYYY/hh/m/ss', {
@@ -17,15 +13,26 @@ export default class Task extends Component {
     locale: ruLocale,
   });
 
-  onSubmit = (e) => {
-    const { id, onUpdate } = this.props;
-    const { task } = this.state;
+  constructor(props) {
+    super(props);
+    const { taskName } = this.props;
 
+    this.state = {
+      task: taskName,
+    };
+  }
+
+  onSubmit = (e) => {
+    const { onUpdate } = this.props;
+    const { task } = this.state;
     e.preventDefault();
-    onUpdate(id, task);
-    this.setState({
-      task: '',
-    });
+    onUpdate(task);
+  };
+
+  onToggle = (e) => {
+    const { id, onToggleDone } = this.props;
+    e.preventDefault();
+    onToggleDone(id);
   };
 
   onChange = (e) => {
@@ -35,8 +42,8 @@ export default class Task extends Component {
   };
 
   render() {
-    const { taskName, onDeleted, done, edit, onToggleDone, onEditing, view, id } = this.props;
-    // const { task } = this.state;
+    const { taskName, onDeleted, done, edit, onToggleDone, onEditing, view } = this.props;
+    const { task } = this.state;
 
     let classNameOfTask = '';
     if (done) {
@@ -52,10 +59,10 @@ export default class Task extends Component {
     }
 
     return (
-      <li className={classNameOfTask} key={id}>
+      <li className={classNameOfTask}>
         {edit && (
           <form onSubmit={this.onSubmit}>
-            <input type="text" className="edit" onChange={this.onChange} value={taskName} />
+            <input type="text" className="edit" onChange={this.onChange} value={task} />
           </form>
         )}
 
@@ -68,7 +75,7 @@ export default class Task extends Component {
             onChange={() => {}}
             id="done"
           />
-          <label onClick={onToggleDone} role="presentation" htmlFor="done">
+          <label onClick={this.onToggle} role="presentation" htmlFor="done">
             <span className="description">{taskName}</span>
             <span className="created">created {this.date} ago</span>
           </label>
